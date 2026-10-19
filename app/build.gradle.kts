@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "uz.murotxonov.sms_provider"
-        minSdk = 36
+        minSdk = 26
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"

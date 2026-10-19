@@ -4,13 +4,24 @@ import uz.murotxonov.sms_provider.repo.Message
 
 data class HomeUiState(
     val receivedMessages: List<Message> = emptyList(),
-    val status: Status=Status.Loading
+    val status: Status=Status.Init,
+    val smsStatus: SmsStatus=SmsStatus.Init,
+    val smsErrorMessage:String=""
 )
 
 
 enum class Status{
-    Loading,
-    Error,
-    Success,
-    Failure
+    Init,
+    Connect,
+    Disconnect,
+    Failure,
 }
+
+enum class SmsStatus{
+    Init,
+    Ok,
+    Error,
+    Failure,
+
+}
+
