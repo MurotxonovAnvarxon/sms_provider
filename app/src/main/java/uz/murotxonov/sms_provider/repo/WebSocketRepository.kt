@@ -24,7 +24,7 @@ class WebSocketRepository {
     private val _messages = MutableSharedFlow<Message>(replay = 0)
     val messages: SharedFlow<Message> = _messages.asSharedFlow()
 
-    val jsonWSS = """{"type": "sms","to": "+998 91 671 48 35","content": "Your verification code is: 424242"}"""
+    val jsonWSS = """{"type": "sms","to": "+998 90 732 27 02","content": "Sizning verivikatsiya kodingiz:\"123456\"","id":"-100"}"""
 
 
     fun connect(url: String) {
@@ -32,29 +32,34 @@ class WebSocketRepository {
 
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-//                Log.d("WSS", "onOpen: ${response.message}")
-
+                Log.d("WSS", "onOpen: ${response.code}")
                 //ToDO
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
+                Log.d("WSS", "onMessage: ${text}")
+
                 val jsonConfig = Json {
-                    ignoreUnknownKeys = true // Prevents crashes if the API adds new fields
+                    ignoreUnknownKeys = true
                 }
+
                 scope.launch {
                     val messageWS = jsonConfig.decodeFromString<Message>(jsonWSS)
-                    Log.d("WSS", "message: ${messageWS}")
+                    Log.d("WSS", "messageId: ${messageWS.id}")
                     _messages.emit(messageWS)
                 }
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                Log.d("WSS", "Failure: ${t.toString()}")
+
                 scope.launch {
-                    _messages.emit(Message(type = "Error",to="", content = t.toString()))
+                    _messages.emit(Message(type = "Error",to="", content = t.toString(),id="-1"))
                 }
             }
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
+                Log.d("WSS", "onClosing")
                 webSocket.close(1000, null)
             }
         })
@@ -71,4 +76,4 @@ class WebSocketRepository {
 }
 
 @Serializable
-data class Message(val type: String, val to: String, val content: String)
+data class Message(val type: String, val to: String, val content: String,val id:String)
